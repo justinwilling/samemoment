@@ -9,7 +9,7 @@ export default function PlaceSearch({ onSelect }) {
   const request = useRef(null);
   useEffect(() => () => request.current?.abort(), []);
   async function search(event) {
-    event.preventDefault();
+    event?.preventDefault();
     const text = query.trim();
     if (text.length < 2) {
       setMessage("Bitte mindestens zwei Zeichen eingeben.");
@@ -79,6 +79,12 @@ export default function PlaceSearch({ onSelect }) {
       if (request.current === controller) setBusy(false);
     }
   }
+  useEffect(() => {
+    const text = query.trim();
+    if (text.length < 2) return;
+    const timer = setTimeout(() => search(), 260);
+    return () => clearTimeout(timer);
+  }, [query]);
   return (
     <div className="placeSearch">
       <form onSubmit={search} role="search" aria-label="Ortssuche">
