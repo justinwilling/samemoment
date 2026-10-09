@@ -1,0 +1,16 @@
+<!doctype html><html lang="de"><title>Bildkonvertierung – Test</title><body><button id="run">Konvertierung testen</button><pre id="result"></pre><script type="module">
+import {prepareImage} from '/image-processing.js';
+import UTIF from 'utif';
+document.querySelector('#run').onclick=async()=>{
+ const results=[];const output=document.querySelector('#result');
+ const canvas=document.createElement('canvas');canvas.width=2600;canvas.height=1700;
+ const c=canvas.getContext('2d');const pixels=c.createImageData(2600,1700);
+ for(let i=0;i<pixels.data.length;i+=4){pixels.data[i]=Math.random()*255;pixels.data[i+1]=Math.random()*255;pixels.data[i+2]=Math.random()*255;pixels.data[i+3]=255;}c.putImageData(pixels,0,0);
+ const files=[];
+ for(const [mime,ext] of [['image/jpeg','jpg'],['image/png','png'],['image/webp','webp']]){const blob=await new Promise(r=>canvas.toBlob(r,mime));files.push(new File([blob],`test.${ext}`,{type:mime}));}
+ const rgba=new Uint8Array(80*60*4).fill(180);files.push(new File([UTIF.encodeImage(rgba,80,60)],'test.tiff',{type:'image/tiff'}));
+ files.push(new File([await (await fetch('./test.heic')).blob()],'test.heic',{type:'image/heic'}));
+ files.push(new File(['broken'],'broken.jpg',{type:'image/jpeg'}));
+ for(const file of files){try{const result=await prepareImage(file);const bitmap=await createImageBitmap(result.blob);results.push({file:file.name,type:result.blob.type,bytes:result.blob.size,width:bitmap.width,height:bitmap.height,pass:result.blob.size<=1536000&&bitmap.width<=2000});bitmap.close();}catch(e){results.push({file:file.name,error:e.message,pass:file.name==='broken.jpg'});}output.textContent=JSON.stringify(results,null,2);}
+};
+</script></body></html>

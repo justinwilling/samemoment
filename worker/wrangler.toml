@@ -1,0 +1,13 @@
+name = "samemoment-api"
+main = "index.js"
+compatibility_date = "2026-09-01"
+
+[[r2_buckets]]
+binding = "PHOTOS"
+bucket_name = "samemoment-photos"
+
+# In Cloudflare Worker Settings setzen:
+# ALLOWED_ORIGIN = https://deine-domain.de
+# SUPABASE_URL = https://PROJECT.supabase.co
+# SUPABASE_PUBLISHABLE_KEY = dein publishable/anon key
+# SUPABASE_SERVICE_ROLE_KEY = als SECRET hinterlegen, nie im Frontend
